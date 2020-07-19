@@ -2,7 +2,8 @@
 
 // load all the things we need
 var LocalStrategy = require('passport-local').Strategy;
-
+const jwt = require('jsonwebtoken');
+const keys = require("./key.js");
 // load up the user model
 var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
@@ -22,8 +23,8 @@ module.exports = function (passport) {
     // passport needs ability to serialize and unserialize users out of session
 
     // used to serialize the user for the session
-    passport.serializeUser(function (user, done) {
-        done(null, user.id);
+    passport.serializeUser(function (token, done) {
+        done(null, token);
     });
 
     // used to deserialize the user
@@ -105,13 +106,29 @@ module.exports = function (passport) {
                     }
 
                     // if the user is found but the password is wrong
-                    if (password !== rows[0].password)
-                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
-
-                    // all is well, return successful user
-                    return done(null, rows[0]);
+                    if (password !== rows[0].password) {
+                        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+                    } else {
+                        const rule = {
+                            id: rows[0].id,
+                            name: rows[0].username
+                        };
+                        //用id和name来做一个token
+                        // jwt.sign("规则", "加密名字", "过期时间", "箭头函数");
+                        jwt.sign(rule, keys.secretOrKey, {
+                            expiresIn: 3600
+                        }, (err, token) => {
+                            if (err) {
+                                throw err
+                            };
+                            console.log(token)
+                            // all is well, return successful user
+                            return done(null, token);
+                        })
+                    }
                 });
                 // connection.end();
             })
     );
+
 };
