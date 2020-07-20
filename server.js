@@ -8,7 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var app      = express();
-var port     = process.env.PORT || 8080;
+var port     = process.env.PORT || 8081;
 
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -19,7 +19,15 @@ var flash    = require('connect-flash');
 require('./config/passport')(passport); // pass passport for configuration
 
 
-
+app.all('*', function(req, res, next) {  
+	debugger
+    res.header("Access-Control-Allow-Origin", "*");  
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
+    res.header("X-Powered-By",' 3.2.1')  
+    res.header("Content-Type", "application/json;charset=utf-8");  
+    next();  
+});
 // set up our express application
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
