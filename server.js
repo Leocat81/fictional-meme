@@ -15,19 +15,15 @@ var flash    = require('connect-flash');
 
 // configuration ===============================================================
 // connect to our database
-
-require('./config/passport')(passport); // pass passport for configuration
-
-
 app.all('*', function(req, res, next) {  
-	debugger
     res.header("Access-Control-Allow-Origin", "*");  
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");  
+    res.header("Access-Control-Allow-Headers", "X-Requested-With,Authorization ");  
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
     res.header("X-Powered-By",' 3.2.1')  
     res.header("Content-Type", "application/json;charset=utf-8");  
     next();  
 });
+require('./config/passport')(passport); // pass passport for configuration
 // set up our express application
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)

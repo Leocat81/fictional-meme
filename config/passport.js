@@ -24,15 +24,18 @@ module.exports = function (passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function (token, done) {
+        // 将user存放到session
         done(null, token);
     });
 
     // used to deserialize the user
-    passport.deserializeUser(function (id, done) {
+    passport.deserializeUser(function (token, done) {
         // connection.connect();
-        connection.query("SELECT * FROM users WHERE id = ? ", [id], function (err, rows) {
-            done(err, rows[0]);
-        });
+        // connection.query("SELECT * FROM users WHERE id = ? ", [id], function (err, rows) {
+        //     done(err, rows[0]);
+        // });
+        // 将user信息放到这里然后返回
+         done(null, token);
         // connection.end();
     });
 

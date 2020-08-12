@@ -1,5 +1,6 @@
 // app/routes.js
 module.exports = function (app, passport) {
+  const cors = require('cors');
   // =====================================
   // HOME PAGE (with login links) ========
   // =====================================
@@ -11,24 +12,32 @@ module.exports = function (app, passport) {
   // =====================================
   // show the login form
   app.get("/login", function (req, res) {
-    // render the page and pass in any flash data if it exists
-    res.render("login.ejs", { message: req.flash("loginMessage") });
-  });
-  // process the login form
-  app.post("/api/login", passport.authenticate("local-login"), function (req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
+       res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Methods",
       "PUT, GET, POST, DELETE, OPTIONS"
     );
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header("Access-Control-Allow-Headers", "Content-Type");
+    // render the page and pass in any flash data if it exists
+    res.render("login.ejs", { message: req.flash("loginMessage") });
+  });
+  // process the login form
+  app.post("/api/login", passport.authenticate("local-login"), cors(),function (req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "PUT, GET, POST, DELETE, OPTIONS"
+    );
+    res.header("Access-Control-Allow-Headers", "X-Requested-With,Authorization ");
+    res.header("Access-Control-Allow-Headers", "Content-Type,authorization ");
+     res.header("Access-Control-Request-Headers","Origin, X-Requested-With, content-Type, Accept, authorization ")
     if (req.body.remember) {
       req.session.cookie.maxAge = 1000 * 60 * 3;
     } else {
       req.session.cookie.expires = false;
     }
-    res.json(req.session.passport.user);
+    res.send(req.session.passport.user);
   });
 
   // =====================================
